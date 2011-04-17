@@ -4,7 +4,6 @@ require("globals")
 require("objman")
 require("object")
 require("graphics")
-require("input")
 require("mainloop")
 require("enemies")
 
