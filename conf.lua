@@ -1,5 +1,5 @@
 function love.conf(t)
-    t.title = "Panel Attack"
+    t.title = "nbml"
     t.author = "sharpobject@gmail.com"
     t.screen.width = 800
     t.screen.height = 600

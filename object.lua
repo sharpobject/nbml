@@ -1,10 +1,10 @@
-Object = class(function(o, x, y, direction, speed, sprite, kind)
+Object = class(function(o, x, y, direction, speed, sprite, kind, ...)
         o.x             = x         or 400
         o.y             = y         or 300
         o.direction     = direction or facing_down
         o.speed         = speed     or 0
         o.img           = img       or nil
-        o.kind          = kind      or "enemy"
+        o.kind          = kind      or "enemy_bullet"
         o.age           = 0
         o.dead          = false
         o.health        = 1
@@ -19,12 +19,16 @@ Object = class(function(o, x, y, direction, speed, sprite, kind)
         o.child_img     = o.img
         o.child_kind    = o.kind
         if obj_man then
-            obj_man.add(o)
+            obj_man:add(o)
+            for junk, args in pairs({...}) do
+                print(args)
+                print("ASSSSSS")
+                obj_man:register(o, args)
+            end
         end
     end)
 
 function Object.run(self)
-    -- TODO: x_accel and y_accel
     if self.accel_turns > 0 then
         self.speed = self.speed + self.accel
         self.accel_turns = self.accel_turns - 1
@@ -33,7 +37,19 @@ function Object.run(self)
         self.direction = self.direction + self.rotation
         self.rotation_turns = self.rotation_turns - 1
     end
-    local dx,dy = get_cartesian(speed, direction)
+    local dx,dy = get_cartesian(self.speed, self.direction)
+    local redo_speed_dir = false
+    if self.x_accel_turns > 0 then
+        redo_speed_dir = true
+        dx = dx + self.x_accel
+    end
+    if self.y_accel_turns > 0 then
+        redo_speed_dir = true
+        dy = dy + self.y_accel
+    end
+    if redo_speed_dir then
+        self.speed, self.direction = get_polar(dx, dy)
+    end
     self.x = self.x + dx
     self.y = self.y + dy
     -- TODO: don't hard code dimensions of space.
@@ -43,7 +59,7 @@ function Object.run(self)
 end
 
 function Object.draw(self)
-    -- TODO: draw something
+    rectangle(self.x - 8, self.y - 8, 16, 16)
 end
 
 function Object.get_x(self)
@@ -127,6 +143,26 @@ function Object.set_child_kind(self, kind)
     self.child_kind = kind
 end
 
+-- each member of ... should be of form {func, ...}
+-- a new routine will be created that runs func(child, ...)
+-- they can also just be functions mmkay
 function Object.fire(self, r, theta, ...)
-    Object(self.x, self.y, theta, r, self.child_img, self.child_kind)
+    local child = Object(self.x, self.y, theta, r,
+        self.child_img, self.child_kind)
+    for idx, args in pairs({...}) do
+        print(args)
+        obj_man:register(child, args)
+    end
+end
+
+function wait(how_long)
+    if how_long then
+        how_long = floor(how_long)
+        if how_long < 1 then
+            return
+        end
+    else
+        how_long = 1
+    end
+    coroutine.yield(how_long)
 end

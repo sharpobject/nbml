@@ -7,6 +7,7 @@ require("object")
 require("graphics")
 require("input")
 require("mainloop")
+require("enemies")
 
 local N_FRAMES = 0
 
@@ -14,7 +15,7 @@ function love.run()
     love.load(arg)
 
     local dt  = 0        -- time for current frame
-    local tau = 10       -- initial value for delay between frames
+    local tau = 15       -- initial value for delay between frames
 
     while true do
         love.timer.step()
@@ -23,6 +24,7 @@ function love.run()
         love.graphics.clear()
         love.update(dt)
         love.draw()
+        love.graphics.print("FPS: ["..love.timer.getFPS().."] delay: ["..math.floor(tau).."ms] idle:["..math.floor(100 * (tau/1000)/dt).."%]", 10, 10)
 
         if(N_FRAMES > 100) then
             tau = tau + (love.timer.getFPS()-60)*0.2*dt
@@ -62,6 +64,13 @@ function love.draw()
         gfx_q[i][1](unpack(gfx_q[i][2]))
     end
     gfx_q:clear()
-    --love.graphics.print("FPS: "..love.timer.getFPS(),315,115)
-    love.graphics.print("FPS: ["..love.timer.getFPS().."] delay: ["..math.floor(tau).."ms] idle:["..math.floor(100 * (tau/1000)/dt).."%]", 10, 10)
+end
+
+function love.keypressed(key, unicode)
+    keys[key] = true
+    this_frame_keys[key] = true
+end
+
+function love.keyreleased(key, unicode)
+    keys[key] = false
 end
