@@ -1,6 +1,5 @@
 require("class")
 require("queue")
-require("util")
 require("globals")
 require("objman")
 require("object")
@@ -24,7 +23,7 @@ function love.run()
         love.graphics.clear()
         love.update(dt)
         love.draw()
-        love.graphics.print("FPS: ["..love.timer.getFPS().."] delay: ["..math.floor(tau).."ms] idle:["..math.floor(100 * (tau/1000)/dt).."%]", 10, 10)
+        love.graphics.print("FPS: ["..love.timer.getFPS().."]", 10, 10)-- delay: ["..math.floor(tau).."ms] idle:["..math.floor(100 * (tau/1000)/dt).."%]", 10, 10)
 
         if(N_FRAMES > 100) then
             tau = tau + (love.timer.getFPS()-60)*0.2*dt
@@ -38,7 +37,7 @@ function love.run()
             love.handlers[e](a,b,c)
         end
 
-        love.timer.sleep(tau)
+--        love.timer.sleep(tau)
         love.graphics.present()
 
         N_FRAMES = N_FRAMES + 1

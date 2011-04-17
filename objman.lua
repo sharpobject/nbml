@@ -80,7 +80,7 @@ function ObjMan.run(self)
     end
 
     -- Make them crash into each other
-    --self:collision("enemy_bullet", "player")
+    self:collision("enemy_bullet", "player")
     -- Get rid of the ones that died
     for kind, objects in pairs(self.objects) do
         local not_objects = {}
@@ -94,7 +94,7 @@ function ObjMan.run(self)
     end
 
     self.objects, self.not_objects = self.not_objects, self.objects
-    print(#self.objects["enemy_bullet"])
+    --print(#self.objects["enemy_bullet"])
     self.age = self.age + 1
 end
 

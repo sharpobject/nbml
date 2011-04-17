@@ -21,8 +21,6 @@ Object = class(function(o, x, y, direction, speed, sprite, kind, ...)
         if obj_man then
             obj_man:add(o)
             for junk, args in pairs({...}) do
-                print(args)
-                print("ASSSSSS")
                 obj_man:register(o, args)
             end
         end
@@ -150,7 +148,6 @@ function Object.fire(self, r, theta, ...)
     local child = Object(self.x, self.y, theta, r,
         self.child_img, self.child_kind)
     for idx, args in pairs({...}) do
-        print(args)
         obj_man:register(child, args)
     end
 end

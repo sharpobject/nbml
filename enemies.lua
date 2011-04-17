@@ -11,8 +11,8 @@ function flower_thing(self)
             end
             dir = dir + 78
         end
-        dir = (dir+3) % 360
-        wait(3)
+        dir = (dir+15) % 360
+        wait(15)
     end
 end
 
