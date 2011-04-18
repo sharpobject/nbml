@@ -14,10 +14,11 @@ function load_img(s)
 end
 
 function draw(img, x, y)
-    gfx_q:push({love.graphics.draw, {img, x, y, 0, 1, 1}})
+    gfx_q:push({love.graphics.draw, {img, x, y}})
 end
 
 function rectangle(x, y, w, h)
+    --love.graphics.rectangle("fill", x, y, w, h)
     gfx_q:push({love.graphics.rectangle, {"fill", x, y, w, h}})
 end
 
@@ -26,7 +27,11 @@ function gprint(str, x, y)
 end
 
 function set_color(r, g, b, a)
+    --love.graphics.setColor(r,g,b,a)
     gfx_q:push({love.graphics.setColor, {r, g, b, a}})
 end
 
-function graphics_init() end
+function graphics_init()
+    framebuffer = love.graphics.newFramebuffer(1024, 1024)
+    --ASSS = load_img("panel54.png")
+end

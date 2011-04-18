@@ -58,10 +58,15 @@ function love.update()
 end
 
 function love.draw()
+    --love.timer.step()
+    --print("update: "..tostring(love.timer.getDelta()*1000))
+    if obj_man then obj_man:draw() end
     for i=gfx_q.first,gfx_q.last do
         gfx_q[i][1](unpack(gfx_q[i][2]))
     end
     gfx_q:clear()
+    --love.timer.step()
+    --print("draw: "..tostring(love.timer.getDelta()*1000))
 end
 
 function love.keypressed(key, unicode)

@@ -23,6 +23,11 @@ max     = math.max
 abs     = math.abs
 floor   = math.floor
 ceil    = math.ceil
+random  = math.random
+
+function uniformly(t)
+    return t[random(#t)]
+end
 
 gfx_q = Queue()
 

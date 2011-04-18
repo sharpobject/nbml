@@ -9,7 +9,6 @@ function fmainloop()
 end
 
 function main_menu(message)
-    local args = {nil, "50.17.236.201", "50.18.48.184", "127.0.0.1"}
     while true do
         gprint((message or "") .. "Press any key to begin :o", 300, 280)
         for foo,bar in pairs(this_frame_keys) do
@@ -24,9 +23,10 @@ function main_play()
     obj_man:register(nil, stage_one)
     while true do
         obj_man:run()
-        obj_man:draw()
+        --obj_man:draw()
         if #obj_man.objects["player"] == 0 then
-            return main_menu, "You died =(\n"
+            return main_menu, "You died after "..tostring(obj_man.age/60)
+                .." seconds =(\n"
         end
         wait()
     end

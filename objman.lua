@@ -108,7 +108,7 @@ function ObjMan.collision(self, kind_a, kind_b)
             local dx = abs(a.x - b.x)
             local dy = abs(a.y - b.y)
             -- TODO: lol, square collision detection with hard-coded radius
-            if dx < 16 and dy < 16 then
+            if dx < 8 and dy < 8 then
                 local damage = max(min(a.health, b.health), 0)
                 a.health = a.health - damage
                 b.health = b.health - damage

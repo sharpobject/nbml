@@ -32,8 +32,8 @@ function Object.run(self)
         self.accel_turns = self.accel_turns - 1
     end
     if self.rot_turns > 0 then
-        self.direction = self.direction + self.rotation
-        self.rotation_turns = self.rotation_turns - 1
+        self.direction = self.direction + self.rot
+        self.rot_turns = self.rot_turns - 1
     end
     local dx,dy = get_cartesian(self.speed, self.direction)
     local redo_speed_dir = false
@@ -57,7 +57,7 @@ function Object.run(self)
 end
 
 function Object.draw(self)
-    rectangle(self.x - 8, self.y - 8, 16, 16)
+    rectangle(self.x - 5, self.y - 5, 10, 10)
 end
 
 function Object.get_x(self)
@@ -109,20 +109,21 @@ function Object.change_speed(self, speed, turns)
 end
 
 function Object.change_direction(self, direction, turns)
-    direction           = direction % tau;
-    self.direction      = self.direction % tau
-    self.rotation       = (direction - self.direction)
-    self.rotationTurns  = turns
+    direction      = direction % tau;
+    self.direction = self.direction % tau
+    self.rot       = (direction - self.direction)
+    self.rot_turns = turns
     if direction - self.direction > pi then
-        self.rotation = self.rotation - tau
+        self.rot = self.rot - tau
     elseif direction - self.direction < -pi then
-        self.rotation = sel.rotation + tau
+        self.rot = self.rot + tau
     end
-    self.rotation = self.rotation / turns
+    self.rot = self.rot / turns
 end
 
 function Object.aim(self)
     if (not obj_man) or #obj_man.objects["player"] == 0 then
+        print("oh shit")
         return facing_down
     end
     local player = obj_man.objects["player"][1]
@@ -131,6 +132,7 @@ end
 
 function Object.vanish(self)
     self.dead = true
+    coroutine.yield(0)
 end
 
 function Object.set_child_img(self, img)
@@ -145,6 +147,9 @@ end
 -- a new routine will be created that runs func(child, ...)
 -- they can also just be functions mmkay
 function Object.fire(self, r, theta, ...)
+    if self.dead then
+        return
+    end
     local child = Object(self.x, self.y, theta, r,
         self.child_img, self.child_kind)
     for idx, args in pairs({...}) do
