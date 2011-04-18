@@ -71,11 +71,18 @@ function fujiwara_197(self)
     end
 end
 
-function stage_one()
-    local patterns = {{fujiwara_197, wander},
-        --{flower_thing},
-        {border_of_wave_and_particle}}
-    Object(400, 100, nil, nil, nil, "enemy_bullet",
-        unpack(uniformly(patterns)))
+function stage_one(junk, key)
+    local patterns = {
+            {border_of_wave_and_particle},
+            {fujiwara_197, wander}
+            --{flower_thing},
+        }
+    if key=="1" or key=="2" then
+        Object(400, 100, nil, nil, nil, "enemy_bullet",
+            unpack(patterns[tonumber(key)]))
+    else
+        Object(400, 100, nil, nil, nil, "enemy_bullet",
+            unpack(uniformly(patterns)))
+    end
     --    fujiwara_197, wander)
 end

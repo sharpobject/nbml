@@ -36,7 +36,7 @@ function love.run()
             love.handlers[e](a,b,c)
         end
 
---        love.timer.sleep(tau)
+        love.timer.sleep(tau)
         love.graphics.present()
 
         N_FRAMES = N_FRAMES + 1
@@ -46,6 +46,9 @@ end
 function love.load()
     math.randomseed(os.time(os.date("*t")))
     graphics_init() -- load images and set up stuff
+    skidfin = love.audio.newSource("skidfin.mp3")
+    skidfin:setLooping(true)
+    skidfin:play()
     mainloop = coroutine.create(fmainloop)
 end
 
@@ -72,6 +75,9 @@ end
 function love.keypressed(key, unicode)
     keys[key] = true
     this_frame_keys[key] = true
+    if key == "m" then
+        skidfin:setVolume(1-skidfin:getVolume())
+    end
 end
 
 function love.keyreleased(key, unicode)
