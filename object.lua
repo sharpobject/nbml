@@ -52,7 +52,7 @@ function Object.run(self)
     self.y = self.y + dy
     -- TODO: don't hard code dimensions of space.
     self.dead = self.dead or self.x < -100 or self.y < -100 or
-        self.x > 900 or self.y > 700-- or self.health <= 0
+        self.x > 900 or self.y > 700
     self.age = self.age + 1
 end
 
@@ -73,8 +73,6 @@ function Object.get_age(self)
 end
 Object.get_turn = Object.get_age
 
---function Object.getRank(self){return rank; end
-
 function Object.get_speed_x(self)
     return get_x_from_polar(self.speed,self.direction)
 end
@@ -91,8 +89,6 @@ function Object.get_speed(self)
     return self.speed
 end
 
---function getID(){return (function)activeObject; end
---function getNewest(){return (function)newestObject; end
 function Object.set_speed_polar(self, r, theta)
     self.speed      = r
     self.direction  = theta
@@ -123,7 +119,7 @@ end
 
 function Object.aim(self)
     if (not obj_man) or #obj_man.objects["player"] == 0 then
-        print("oh shit")
+        print("oh no!")
         return facing_down
     end
     local player = obj_man.objects["player"][1]
@@ -132,6 +128,8 @@ end
 
 function Object.vanish(self)
     self.dead = true
+    -- it's important that we stop running the object's script
+    -- in addition to killing the object.
     coroutine.yield(0)
 end
 

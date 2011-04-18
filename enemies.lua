@@ -1,27 +1,12 @@
-function flower_thing(self)
-    local dir=-6
-    while true do
-        dir = self:aim()
-        for j=0,3 do
-            for i=8,2,-1 do
-                self:fire(.5*i,dir)
-            end
-            dir = dir + 90*degrees
-        end
-        dir = (dir+15) % 360
-        wait(15)
-    end
-end
-
 function border_of_wave_and_particle(self)
     local theta = 0
     local dtheta = 0
+    local ddtheta = 0.2 * degrees
     while true do
-        local this_turn_angle = theta * degrees
         for i=tau/3, tau, tau/3 do
-            self:fire(8, this_turn_angle + i)
+            self:fire(8, theta + i)
         end
-        dtheta = (dtheta + 0.2) % 360
+        dtheta = (dtheta + ddtheta) % tau
         theta = theta + dtheta
         wait(2)
     end
@@ -75,7 +60,6 @@ function stage_one(junk, key)
     local patterns = {
             {border_of_wave_and_particle},
             {fujiwara_197, wander}
-            --{flower_thing},
         }
     if key=="1" or key=="2" then
         Object(400, 100, nil, nil, nil, "enemy_bullet",
@@ -84,5 +68,4 @@ function stage_one(junk, key)
         Object(400, 100, nil, nil, nil, "enemy_bullet",
             unpack(uniformly(patterns)))
     end
-    --    fujiwara_197, wander)
 end

@@ -48,10 +48,10 @@ function ObjMan.run(self)
 
     -- Move the player back onto the screen...
     if player then
-        player.x = min(player.x, 800-8)
-        player.x = max(player.x, 8)
-        player.y = min(player.y, 600-8)
-        player.y = max(player.y, 8)
+        player.x = min(player.x, 800-5)
+        player.x = max(player.x, 5)
+        player.y = min(player.y, 600-5)
+        player.y = max(player.y, 5)
     end
 
     -- Run all of their scripts
@@ -78,6 +78,8 @@ function ObjMan.run(self)
             later_r[#later_r + 1] = {routine}
         end
     end
+    -- don't leave references to dead routines lying around...
+    self.routines[self.age] = nil
 
     -- Make them crash into each other
     self:collision("enemy_bullet", "player")
@@ -94,7 +96,6 @@ function ObjMan.run(self)
     end
 
     self.objects, self.not_objects = self.not_objects, self.objects
-    --print(#self.objects["enemy_bullet"])
     self.age = self.age + 1
 end
 
@@ -130,7 +131,6 @@ function ObjMan.register(self, obj, args)
         self.routines[self.age+1] = {}
     end
     local routines = self.routines[self.age+1]
-    local args_type = type(args)
     if type(args) == "function" then
         args = {args}
     end
