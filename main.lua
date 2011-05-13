@@ -20,10 +20,12 @@ function love.run()
         dt = math.min(0.1, love.timer.getDelta() )
 
         love.graphics.clear()
+        love.graphics.setColor(unpack(colors.dgray))
+        love.graphics.rectangle("fill",-5,-5,900,900)
+        set_color(unpack(colors.white))
         love.update(dt)
         love.draw()
-        love.graphics.print("FPS: ["..love.timer.getFPS().."]", 10, 10)-- delay: ["..math.floor(tau).."ms] idle:["..math.floor(100 * (tau/1000)/dt).."%]", 10, 10)
-
+       -- delay: ["..math.floor(tau).."ms] idle:["..math.floor(100 * (tau/1000)/dt).."%]", 10, 10)
         if(N_FRAMES > 100) then
             tau = tau + (love.timer.getFPS()-60)*0.2*dt
         end
@@ -46,25 +48,33 @@ end
 function love.load()
     math.randomseed(os.time(os.date("*t")))
     graphics_init() -- load images and set up stuff
-    skidfin = love.audio.newSource("skidfin.mp3")
-    skidfin:setLooping(true)
-    skidfin:play()
+    --skidfin = love.audio.newSource("skidfin.mp3")
+    --skidfin:setLooping(true)
+    --skidfin:play()
     mainloop = coroutine.create(fmainloop)
 end
 
 function love.update()
-    local status, err = coroutine.resume(mainloop)
+    local status, err, ret = coroutine.resume(mainloop)
     if not status then
-        error(err)
+        error(err..'\n'..debug.traceback(mainloop))
     end
+    if ret then error(tostring(ret)) end
     this_frame_keys = {}
 end
 
 function love.draw()
     --love.timer.step()
     --print("update: "..tostring(love.timer.getDelta()*1000))
-    if obj_man then obj_man:draw() end
+    set_color(unpack(colors.white))
+    gprint("FPS: ["..love.timer.getFPS().."]", 10, 10)
     for i=gfx_q.first,gfx_q.last do
+        --[[local tab = {}
+        tab[love.graphics.print] = "print"
+        tab[love.graphics.rectangle] = "rectangle"
+        tab[love.graphics.setColor] = "set_color"
+        tab[love.graphics.draw] = "draw"
+        print(tab[gfx_q[i][1] ], unpack(gfx_q[i][2]))--]]
         gfx_q[i][1](unpack(gfx_q[i][2]))
     end
     gfx_q:clear()
@@ -76,7 +86,7 @@ function love.keypressed(key, unicode)
     keys[key] = true
     this_frame_keys[key] = true
     if key == "m" then
-        skidfin:setVolume(1-skidfin:getVolume())
+   --     skidfin:setVolume(1-skidfin:getVolume())
     end
 end
 

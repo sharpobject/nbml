@@ -26,12 +26,16 @@ function gprint(str, x, y)
     gfx_q:push({love.graphics.print, {str, x, y}})
 end
 
+local _r, _g, _b, _a = nil, nil, nil, nil
 function set_color(r, g, b, a)
-    --love.graphics.setColor(r,g,b,a)
-    gfx_q:push({love.graphics.setColor, {r, g, b, a}})
+    a = a or 255
+    -- only do it if this color isn't the same as the previous one...
+    if _r~=r or _g~=g or _b~=b or _a~=a then
+        _r,_g,_b,_a = r,g,b,a
+        gfx_q:push({love.graphics.setColor, {r, g, b, a}})
+    end
 end
 
 function graphics_init()
-    framebuffer = love.graphics.newFramebuffer(1024, 1024)
-    --ASSS = load_img("panel54.png")
+    --framebuffer = love.graphics.newFramebuffer(1024, 1024)
 end

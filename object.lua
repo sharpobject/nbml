@@ -1,32 +1,54 @@
-Object = class(function(o, x, y, direction, speed, sprite, kind, ...)
-        o.x             = x         or 400
-        o.y             = y         or 300
-        o.direction     = direction or facing_down
-        o.speed         = speed     or 0
-        o.img           = img       or nil
-        o.kind          = kind      or "enemy_bullet"
-        o.age           = 0
-        o.dead          = false
-        o.health        = 1
-        o.x_accel       = 0
-        o.x_accel_turns = 0
-        o.y_accel       = 0
-        o.y_accel_turns = 0
-        o.accel         = 0
-        o.accel_turns   = 0
-        o.rot           = 0
-        o.rot_turns     = 0
-        o.child_img     = o.img
-        o.child_kind    = o.kind
-        if obj_man then
-            obj_man:add(o)
-            for junk, args in pairs({...}) do
-                obj_man:register(o, args)
-            end
-        end
+Object = class(function(o, ...)
+        o:update(...)
     end)
 
+function Object.update(o, a, ...)
+    o.x             = a.x           or o.x           or 400
+    o.y             = a.y           or o.y           or 300
+    o.w             = a.w           or o.w           or 10
+    o.direction     = a.direction   or o.direction   or facing_down
+    o.speed         = a.speed       or o.speed       or 0
+    o.kind          = a.kind        or o.kind        or "enemy_bullet"
+    o.color         = a.color       or o.color       or default_colors[o.kind]
+    o.parent        = a.parent      or o.parent      or nil
+    o.health        = a.health      or o.health      or 1
+    o.child_color   = a.child_color or o.child_color or o.color
+    o.age           = o.age           or 0
+    o.dead          = o.dead          or false
+    o.x_accel       = o.x_accel       or 0
+    o.x_accel_turns = o.x_accel_turns or 0
+    o.y_accel       = o.y_accel       or 0
+    o.y_accel_turns = o.y_accel_turns or 0
+    o.accel         = o.accel         or 0
+    o.accel_turns   = o.accel_turns   or 0
+    o.rot           = o.rot           or 0
+    o.rot_turns     = o.rot_turns     or 0
+    o.child_kind    = a.child_kind    or o.child_kind
+    o.top_half      = a.top_half      or o.top_half
+    if not o.child_kind and o.kind == "spawner" then
+        o.child_kind = "enemy_bullet"
+    else
+        o.child_kind = o.kind
+    end
+    if obj_man then
+        obj_man:add(o)
+        for junk, args in pairs({...}) do
+            obj_man:register(o, args)
+        end
+    end
+end
+
 function Object.run(self)
+    --[[if self.fade_time ~= 0 then
+        self.fade_time = self.fade_time - 1
+        if self.parent and not self.dead and self.parent.x and self.parent.y then
+            self.x         = self.parent.x
+            self.y         = self.parent.y
+        end
+        if self.dead then
+        end
+        return
+    end--]]
     if self.accel_turns > 0 then
         self.speed = self.speed + self.accel
         self.accel_turns = self.accel_turns - 1
@@ -57,7 +79,28 @@ function Object.run(self)
 end
 
 function Object.draw(self)
-    rectangle(self.x - 5, self.y - 5, 10, 10)
+    local r,g,b,a = unpack(self.color)
+    local is_player = self.kind == "player"
+    local size = is_player and 9 or 16
+    local age = (self.kind == "bot_fade" or self.kind == "top_fade")
+                and (3-self.age*.4) or self.age
+    if age < 6 then
+        size = size + 30 * ((6-age) / 6)
+        a = (a or 255) - 130 - ((5-age) * 20)
+    end
+    local x,y,w,h = self.x - size/2, self.y - size/2, size, size
+    if self.kind == "bot_fade" then
+        y,h = y+h/2, h/2
+    elseif self.kind == "top_fade" then
+        h = h/2
+    end
+    set_color(r,g,b,a)
+    rectangle(x,y,w,h)
+    --print(is_player)
+    if(is_player) then
+        set_color(255, 255, 255, 255)
+        rectangle(self.x-.5, self.y-.5, 1, 1)
+    end
 end
 
 function Object.get_x(self)
@@ -126,8 +169,12 @@ function Object.aim(self)
     return get_theta(player.x-self.x, player.y-self.y)
 end
 
-function Object.vanish(self)
+function Object.core_vanish(self)
     self.dead = true
+end
+
+function Object.vanish(self)
+    self:core_vanish()
     -- it's important that we stop running the object's script
     -- in addition to killing the object.
     coroutine.yield(0)
@@ -144,15 +191,18 @@ end
 -- each member of ... should be of form {func, ...}
 -- a new routine will be created that runs func(child, ...)
 -- they can also just be functions mmkay
-function Object.fire(self, r, theta, ...)
+function Object.fire(self, a, ...)
     if self.dead then
         return
     end
-    local child = Object(self.x, self.y, theta, r,
-        self.child_img, self.child_kind)
-    for idx, args in pairs({...}) do
-        obj_man:register(child, args)
-    end
+    a.x      = a.x     or self.x
+    a.y      = a.y     or self.y
+    a.color  = a.color or self.child_color
+    a.kind   = a.kind  or self.child_kind
+    a.parent = self
+    --a.direction = a.direction or a.theta
+    --a.speed     = a.speed     or a.r
+    Object(a, ...)
 end
 
 function wait(how_long)

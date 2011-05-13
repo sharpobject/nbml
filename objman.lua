@@ -7,13 +7,13 @@ ObjMan = class(function(o)
         end
         o.age = 0
         o.routines = {}
-        o:add(Object(400, 300, facing_up, 0, nil, "player"))
+        o:add(Object({x=400, y=300, direction=facing_up, kind="player"}))
     end)
 
 function ObjMan.draw(self)
     for i,kind in ipairs(object_kinds) do
         local objects = self.objects[kind]
-        set_color(unpack(colors[kind]))
+        --set_color(unpack(default_colors[kind]))
         for j=1, #objects do
             objects[j]:draw()
         end
@@ -67,7 +67,7 @@ function ObjMan.run(self)
             status, result = coroutine.resume(routine)
         end
         if not status then
-            error(result)
+            error(result..'\n'..debug.traceback(routine))
         end
         if result and type(result) == "number" and result > 0 then
             result = result + self.age
@@ -88,7 +88,20 @@ function ObjMan.run(self)
         local not_objects = {}
         for j=1, #objects do
             local object = objects[j]
-            if not object.dead then
+            if object.dead then
+                if kind=="player" or kind=="enemy_bullet" then
+                    object.dead = false
+                    local r, theta = v_add_polar({3, facing_right},
+                        {object.speed, object.direction})
+                    object:fire({speed=r, direction=theta, kind="top_fade"},
+                        {later, 10, Object.vanish})
+                    r, theta = v_add_polar({3, facing_left},
+                        {object.speed, object.direction})
+                    object:fire({speed=r, direction=theta, kind="bot_fade"},
+                        {later, 10, Object.vanish})
+                    object.dead = true
+                end
+            else
                 not_objects[#not_objects + 1] = object
             end
         end
@@ -113,8 +126,8 @@ function ObjMan.collision(self, kind_a, kind_b)
                 local damage = max(min(a.health, b.health), 0)
                 a.health = a.health - damage
                 b.health = b.health - damage
-                if a.health <= 0 then a.dead = true end
-                if b.health <= 0 then b.dead = true end
+                if a.health <= 0 then a:core_vanish() end
+                if b.health <= 0 then b:core_vanish() end
             end
         end
     end
