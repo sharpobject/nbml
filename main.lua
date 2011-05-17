@@ -38,7 +38,7 @@ function love.run()
             love.handlers[e](a,b,c)
         end
 
-        love.timer.sleep(tau)
+        -- love.timer.sleep(tau)
         love.graphics.present()
 
         N_FRAMES = N_FRAMES + 1

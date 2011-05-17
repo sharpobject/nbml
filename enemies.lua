@@ -1,5 +1,5 @@
 function later(self, time, args)
-    wait(time)
+    self:wait(time)
     if type(args) == "function" then
         args = {args}
     end
@@ -20,31 +20,31 @@ function border_of_wave_and_particle(self)
         end
         dtheta = dtheta + ddtheta
         theta = (theta + dtheta) % tau
-        wait(2)
+        self:wait(2)
     end
 end
 
 function mokou_wander(self)
-    local x, other_x, y, h, accel = {475}, {}, 0, 120, 30
+    local x, other_x, y, h, accel = {}, {475}, 0, 120, 30
     for i=325,450,25 do other_x[#other_x+1] = i x[#x+1] = i+12.5 end
     while true do
-        wait(max(120-45*rank, 0))
+        self:wait(max(120-45*rank, 0))
         -- Choose a random spot to wander to
         local xx = x[random(#x)]
         local yy = random(h) + y
         local r, theta = get_polar(xx-self.x, yy-self.y)
         self:change_speed(r/accel, accel)
         self:change_direction(theta, 1)
-        wait(accel)
+        self:wait(accel)
         self:change_speed(0, accel)
-        wait(accel)
+        self:wait(accel)
         x, other_x = other_x, x
     end
 end
 
 function mokou_197(self)
     local bouncer = function(self) while true do
-        wait(1)
+        self:wait(1)
         if self.y < 0 or self.y > 600 then
             self.child_color = colors.blue
             self:fire({speed=self.speed/2, direction=self.direction+pi})
@@ -52,7 +52,7 @@ function mokou_197(self)
         end
     end end
     local spawner = function(self) while true do
-        wait(20)
+        self:wait(20)
         self.child_color = colors.pink
         self:fire({speed=4, direction=facing_up},   bouncer)
         self:fire({speed=4, direction=facing_down}, bouncer)
@@ -66,7 +66,7 @@ function mokou_197(self)
         self.child_color = colors.pink
         self:fire({speed=4, direction=facing_up},   bouncer)
         self:fire({speed=4, direction=facing_down}, bouncer)
-        wait(180 - min(45*rank,120))
+        self:wait(180 - min(45*rank,120))
     end
 end
 
@@ -75,17 +75,17 @@ function grid(self)
         self.child_color = colors.white
         while true do
             self:fire({}, {later, 120, Object.vanish})
-            wait(2)
+            self:wait(2)
         end
     end
     local trace_a = function(self) while true do
         self:fire({speed=25, direction=facing_right, kind="spawner"}, trace_b)
-        wait(1)
+        self:wait(1)
     end end
     --[[local trace_a = function(self) while true do
         self.child_color = {255, 255, 255}
         self:fire(1.5*15, facing_right)
-        wait(1)
+        self:wait(1)
     end end--]]
     Object({x=-25, y=-50, direction=facing_down, speed=50, kind="spawner"}, trace_a)
 end
@@ -101,7 +101,7 @@ end
 function stage_one(junk, key)
     local patterns = {
             {{later, 22.5*60, Object.vanish, 60}, border_of_wave_and_particle},
-            {{later, 15*60, Object.vanish, 360}, mokou_197, mokou_wander}
+            {{later, 15*60, Object.vanish, 360}, mokou_197, mokou_wander},
             --{{later, 5*60, Object.vanish, 0}, grid}
         }
     local boss = nil

@@ -205,6 +205,13 @@ function Object.fire(self, a, ...)
     Object(a, ...)
 end
 
+function Object.wait(self, how_long)
+    wait(how_long)
+    if self.dead then
+        coroutine.yield(0)
+    end
+end
+
 function wait(how_long)
     if how_long then
         how_long = floor(how_long)
