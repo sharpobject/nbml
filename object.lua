@@ -25,6 +25,7 @@ function Object.update(o, a, ...)
     o.rot_turns     = o.rot_turns     or 0
     o.child_kind    = a.child_kind    or o.child_kind
     o.top_half      = a.top_half      or o.top_half
+    o.edge_margin   = a.edge_margin   or o.edge_margin or 100
     if not o.child_kind and o.kind == "spawner" then
         o.child_kind = "enemy_bullet"
     else
@@ -73,8 +74,8 @@ function Object.run(self)
     self.x = self.x + dx
     self.y = self.y + dy
     -- TODO: don't hard code dimensions of space.
-    self.dead = self.dead or self.x < -100 or self.y < -100 or
-        self.x > 900 or self.y > 700
+    self.dead = self.dead or self.x < -self.edge_margin or self.y < -self.edge_margin or
+        self.x > 800+self.edge_margin or self.y > 600+self.edge_margin
     self.age = self.age + 1
 end
 
