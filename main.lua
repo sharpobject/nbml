@@ -47,7 +47,6 @@ function love.draw()
     set_color(unpack(colors.white))
     gprint("FPS: ["..love.timer.getFPS().."]", 10, 10)
     for i=gfx_q.first,gfx_q.last do
-        print("pring")
         --[[local tab = {}
         tab[love.graphics.print] = "print"
         tab[love.graphics.rectangle] = "rectangle"
